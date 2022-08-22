@@ -1,0 +1,46 @@
+        <?php
+        $this->Widget->clear();
+        $this->Widget->create($this->_('Proxmox.add_template.box_title', true));
+        ?>
+        <div class="inner">
+            <?php
+            $this->Form->create();
+            ?>
+            <div class="title_row first">
+                <h3><?php $this->_('Proxmox.add_template.basic_title');?></h3>
+            </div>
+            <div class="pad">
+                <ul>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_('Proxmox.add_template.select_node', true), 'server_name');
+                        $this->Form->fieldText('server_name', (isset($vars->server_name) ? $vars->server_name : null), ['id' => 'server_name']);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_('Proxmox.add_template.name', true), 'template_name');
+                        $this->Form->fieldText('template_name', (isset($vars->template_name) ? $vars->template_name : null), ['id' => 'template_name']);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_('Proxmox.add_template.template_id', true), 'template_id');
+                        $this->Form->fieldText('template_id', (isset($vars->template_id) ? $vars->template_id : null), ['id' => 'template_id']);
+                        ?>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="button_row">
+                <?php
+                $this->Form->fieldSubmit('save', $this->_('Proxmox.add_template.add_btn', true), ['class' => 'btn btn-primary float-right']);
+                ?>
+            </div>
+            <?php
+            $this->Form->end();
+            ?>
+        </div>
+        <?php
+        $this->Widget->end();
+        ?>

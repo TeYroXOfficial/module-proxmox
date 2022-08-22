@@ -60,6 +60,7 @@ $lang['Proxmox.module_group'] = 'Proxmox Master Group';
 // Module management
 $lang['Proxmox.add_module_row'] = 'Add Server';
 $lang['Proxmox.add_module_group'] = 'Add Server Group';
+$lang['Proxmox.add_template'] = 'Add KVM Template';
 $lang['Proxmox.manage.module_rows_title'] = 'Proxmox Master Servers';
 $lang['Proxmox.manage.module_groups_title'] = 'Proxmox Master Server Groups';
 $lang['Proxmox.manage.module_rows_heading.server_label'] = 'Server Label';
@@ -110,6 +111,16 @@ $lang['Proxmox.unprivileged.enabled'] = 'Enabled';
 $lang['Proxmox.add_row.box_title'] = 'Add Proxmox Server';
 $lang['Proxmox.add_row.basic_title'] = 'Basic Settings';
 $lang['Proxmox.add_row.add_btn'] = 'Add Server';
+
+
+// Add Template
+$lang['Proxmox.add_template.box_title'] = 'Add KVM Template';
+$lang['Proxmox.add_template.basic_title'] = 'Basic Settings';
+$lang['Proxmox.add_template.add_btn'] = 'Add Template';
+
+$lang['Proxmox.add_template.select_node'] = 'Select Proxmox Server';
+$lang['Proxmox.add_template.name'] = 'Template Name';
+$lang['Proxmox.add_template.template_id'] = 'VM ID';
 
 
 // Edit module row

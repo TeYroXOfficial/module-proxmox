@@ -673,6 +673,20 @@ class Proxmox extends Module
         return $this->view->fetch();
     }
 
+    public function manageAddTemplate(array &$vars)
+    {
+        // Load the view into this object, so helpers can be automatically added to the view
+        $this->view = new View('add_template', 'default');
+        $this->view->base_uri = $this->base_uri;
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'proxmox' . DS);
+
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
+
+        $this->view->set('vars', (object)$vars);
+        return $this->view->fetch();
+    }
+
     /**
      * Returns the rendered view of the edit module row page
      *
