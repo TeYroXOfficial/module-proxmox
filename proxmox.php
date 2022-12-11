@@ -1247,6 +1247,7 @@ class Proxmox extends Module
             'tabClientActions' => Language::_('Proxmox.tab_actions', true),
             'tabClientStats' => Language::_('Proxmox.tab_stats', true),
             'tabClientConsole' => Language::_('Proxmox.tab_console', true),
+            'tabClientTasks' => Language::_('Proxmox.tab_tasks', true),
         ];
     }
 
@@ -1632,6 +1633,11 @@ class Proxmox extends Module
         return $view->fetch();
     }
 
+    public function tabClientTasks($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        $view = $this->tabTasks($package, $service, $get, $post, true);
+        return $view->fetch();
+    }
     /**
      * Builds the data for the admin/client stats tabs
      * @see Proxmox::tabStats() and Proxmox::tabClientStats()
@@ -1764,6 +1770,56 @@ class Proxmox extends Module
 
         $this->view->set('node_statistics', $this->getNodeStatistics($service_fields->proxmox_node, $module_row));
         $this->view->set('console', (object)$session);
+
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'proxmox' . DS);
+        return $this->view;
+    }
+
+    public function tabTasks($package, $service, array $get = null, array $post = null, $client = false){
+
+        $template = ($client ? "tab_client_tasks" : "tab_tasks");
+        $this->view = new View($template, "default");
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html', "Date", "WidgetClient"]);
+
+        // Get the service fields
+        $service_fields = $this->serviceFieldsToObject($service->fields);
+        $module_row = $this->getModuleRow($package->module_row);
+
+        $api = $this->getApi(
+            $module_row->meta->user,
+            $module_row->meta->password,
+            $module_row->meta->host,
+            $module_row->meta->port
+        );
+        $api->loadCommand('proxmox_vserver');
+        $server_api = new ProxmoxVserver($api);
+
+        $params = [
+            'vmid' => $service_fields->proxmox_vserver_id,
+            'type' => $service_fields->proxmox_type,
+            'node' => $service_fields->proxmox_node,
+            'pid'  => $service_fields->pid
+        ];
+
+        $tasks = $this->parseResponse($server_api->task($params), $module_row);
+
+        $client_pagination = $this->base_uri . "services/manage/" . $this->Html->ifSet($service->id) . "/tabClientTasks/[p]/" ;
+        $admin_pagination  = $this->base_uri . "clients/servicetab/" . $this->Html->ifSet($service->client_id) . "/" . $this->Html->ifSet($service->id) . "/tabTasks/[p]/" ;
+
+        $pagin_admin = Configure::get("Blesta.pagination") ;
+        $pagin_client = Configure::get("Blesta.pagination_client") ;
+
+        $settings = array_merge(($client ? $pagin_client : $pagin_admin), array(
+                'total_results' => count($tasks),
+                'uri'=> ($client ? $client_pagination : $admin_pagination),
+                'params'=>array()
+            )
+        );
+
+        Loader::loadHelpers($this, array("Pagination"=>array($get, $settings)));
+        // $this->Pagination->setSettings(Configure::get("Blesta.pagination_ajax"));
+        ($client ? "" : $this->Pagination->setSettings(Configure::get("Blesta.pagination_ajax"))) ;
 
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'proxmox' . DS);
         return $this->view;

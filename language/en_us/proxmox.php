@@ -151,7 +151,15 @@ $lang['Proxmox.service_info.proxmox_password'] = 'Password';
 $lang['Proxmox.tab_actions'] = 'Server Actions';
 $lang['Proxmox.tab_stats'] = 'Stats';
 $lang['Proxmox.tab_console'] = 'Console';
+$lang['Proxmox.tab_tasks'] = 'Tasks';
 
+// Tasks
+$lang['Proxmox.tab_tasks.no_tasks'] = 'No Available Tasks';
+$lang['Proxmox.tab_client_tasks.pid'] = 'Process ID';
+$lang['Proxmox.tab_client_tasks.type'] = 'Type';
+$lang['Proxmox.tab_client_tasks.starttime'] = 'Start Time';
+$lang['Proxmox.tab_client_tasks.endtime'] = 'End Time';
+$lang['Proxmox.tab_client_tasks.status'] = 'Status';
 
 // Actions Tab
 $lang['Proxmox.tab_actions.heading_actions'] = 'Actions';

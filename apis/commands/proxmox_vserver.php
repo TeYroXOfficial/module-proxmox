@@ -312,4 +312,13 @@ class ProxmoxVserver
             'GET'
         );
     }
+
+    public function task(array $vars)
+    {
+        return $this->api->submit(
+            'nodes/' . $vars['node'] . '/tasks/',
+            [],
+            'GET'
+        );
+    }
 }

@@ -1,0 +1,27 @@
+	<div class="table-responsive">
+		<table class="table table-curved table-striped">
+			<thead>
+				<tr>
+					<th><?php $this->_('Proxmox.tab_client_tasks.pid');?></th>
+					<th><?php $this->_('Proxmox.tab_client_tasks.type');?></th>
+					<th><?php $this->_('Proxmox.tab_client_tasks.starttime');?></th>
+					<th><?php $this->_('Proxmox.tab_client_tasks.endtime');?></th>
+					<th><?php $this->_('Proxmox.tab_client_tasks.status');?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php $this->Html->safe($tasks->pid);?></td>
+					<td><?php $this->Html->_($tasks['type']);?></td>
+					<td><?php echo $this->Date->cast($this->Html->ifSet($tasks['starttime']) , "date_time") ;?></td>
+					<td><?php echo $this->Date->cast($this->Html->ifSet($tasks['endtime']) , "date_time") ;?></td>
+					<td><?php $this->Html->_($tasks['status']);?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<?php
+	if ($this->Pagination->hasPages()) {
+    		$this->Pagination->build();
+    	}
+    	?>
