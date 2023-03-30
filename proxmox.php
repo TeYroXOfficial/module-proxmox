@@ -1,7 +1,5 @@
 <?php
 
-use Blesta\Core\Util\Validate\Server;
-
 /**
  * Proxmox Module
  *
@@ -126,7 +124,7 @@ class Proxmox extends Module
             'proxmox_hostname' => [
                 'format' => [
                     'if_set' => $edit,
-                    'rule' => [[$this, 'validateHostName']],
+                    'rule' => ['matches', '/^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/'],
                     'message' => Language::_('Proxmox.!error.proxmox_hostname.format', true)
                 ]
             ]
@@ -2648,7 +2646,7 @@ class Proxmox extends Module
             ],
             'host' => [
                 'format' => [
-                    'rule' => [[$this, 'validateHostName']],
+                    'rule' => ['matches', '/^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/'],
                     'message' => Language::_('Proxmox.!error.host.format', true)
                 ]
             ],
@@ -2750,17 +2748,5 @@ class Proxmox extends Module
     {
         // Require at least one node
         return (isset($nodes[0]) && !empty($nodes[0]));
-    }
-
-    /**
-     * Validates that the given hostname is valid
-     *
-     * @param string $host_name The host name to validate
-     * @return bool True if the hostname is valid, false otherwise
-     */
-    public function validateHostName($host_name)
-    {
-        $validator = new Server();
-        return $validator->isDomain($host_name) || $validator->isIp($host_name);
     }
 }
