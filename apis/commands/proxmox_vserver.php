@@ -48,14 +48,27 @@ class ProxmoxVserver
     {
         switch ($vars['type']) {
             case 'qemu':
-                $response = $this->api->submit('nodes/' . $vars['node'] . '/qemu', [
-                    'vmid' => $vars['vmid'],
-                    'sockets' => $vars['sockets'],
-                    'memory' => $vars['memory'],
-                    'storage' => $vars['storage'],
-                    'net0' => 'virtio,bridge=vmbr0,rate=' . $vars['netspeed'],
-                    'onboot' => '1'
-                ], 'POST');
+                if ($vars['cloudinit'] != '0') {
+                    $response = $this->api->submit('nodes/' . $vars['node'] . '/qemu', [
+                        'vmid' => $vars['vmid'],
+                        'sockets' => $vars['sockets'],
+                        'memory' => $vars['memory'],
+                        'storage' => $vars['storage'],
+                        'net0' => 'virtio,bridge=vmbr0,rate=' . $vars['netspeed'],
+                        'ide0' => $vars['storage'] . ':cloudinit',
+                        'ipconfig0' => 'ip=' . $vars['ip'] . '/'. $vars['cidr'] . ',gw=' . $vars['gateway'],
+                        'onboot' => '1'
+                    ], 'POST');
+                } else {
+                    $response = $this->api->submit('nodes/' . $vars['node'] . '/qemu', [
+                        'vmid' => $vars['vmid'],
+                        'sockets' => $vars['sockets'],
+                        'memory' => $vars['memory'],
+                        'storage' => $vars['storage'],
+                        'net0' => 'virtio,bridge=vmbr0,rate=' . $vars['netspeed'],
+                        'onboot' => '1'
+                    ], 'POST');
+                }
 
                 $this->api->submit('nodes/' . $vars['node'] . '/storage/' . $vars['storage'] . '/content', [
                     'vmid' => $vars['vmid'],

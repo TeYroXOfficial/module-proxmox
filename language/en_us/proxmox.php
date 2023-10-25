@@ -94,6 +94,8 @@ $lang['Proxmox.row_meta.vmid'] = 'Next VMID (do not change unless necessary!)';
 $lang['Proxmox.row_meta.default_vmid'] = '200';
 $lang['Proxmox.row_meta.default_port'] = '8006';
 $lang['Proxmox.row_meta.ips'] = 'IPs (one per line)';
+$lang['Proxmox.row_meta.gateway'] = 'Network Gateway';
+$lang['Proxmox.row_meta.cidr'] = 'CIDR';
 
 
 // Server types
@@ -104,6 +106,10 @@ $lang['Proxmox.types.kvm'] = 'KVM';
 // Set Unprivileged
 $lang['Proxmox.unprivileged.disabled'] = 'Disabled';
 $lang['Proxmox.unprivileged.enabled'] = 'Enabled';
+
+// Set CloudInit
+$lang['Proxmox.cloudinit.disabled'] = 'Disabled';
+$lang['Proxmox.cloudinit.enabled'] = 'Enabled';
 
 
 // Add module row
@@ -121,7 +127,6 @@ $lang['Proxmox.edit_row.add_btn'] = 'Update Server';
 // Package fields
 $lang['Proxmox.package_fields.type'] = 'Type';
 $lang['Proxmox.package_fields.storage'] = 'Storage Name';
-$lang['Proxmox.package_fields.gateway'] = 'Network Gateway';
 $lang['Proxmox.package_fields.template_storage'] = 'CT Template Storage Name';
 $lang['Proxmox.package_fields.default_template'] = 'Default Template';
 $lang['Proxmox.package_fields.hdd'] = 'Storage (GB)';
@@ -132,6 +137,7 @@ $lang['Proxmox.package_fields.cpulimit'] = 'CPU Limit';
 $lang['Proxmox.package_fields.cpuunits'] = 'CPU Units';
 $lang['Proxmox.package_fields.swap'] = 'SWAP (MB)';
 $lang['Proxmox.package_fields.unprivileged'] = 'Unprivileged';
+$lang['Proxmox.package_fields.cloudinit'] = 'Cloud-init';
 
 $lang['Proxmox.package_fields.assigned_nodes'] = 'Assigned Nodes';
 $lang['Proxmox.package_fields.available_nodes'] = 'Available Nodes';

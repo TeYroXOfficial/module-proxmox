@@ -53,6 +53,18 @@
                         $this->Form->fieldTextarea('ips', (isset($vars->ips) ? $vars->ips : null), ['id' => 'ips']);
                         ?>
                     </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_('Proxmox.row_meta.gateway', true), 'gateway');
+                        $this->Form->fieldText('gateway', (isset($vars->gateway) ? $vars->gateway : null), ['id' => 'gateway', 'placeholder' => 'e.g. 127.0.0.1']);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_('Proxmox.row_meta.cidr', true), 'cidr');
+                        $this->Form->fieldText('cidr', (isset($vars->cidr) ? $vars->cidr : null), ['id' => 'cidr', 'placeholder' => 'e.g. 27'] );
+                        ?>
+                    </li>
                 </ul>
             </div>
 
