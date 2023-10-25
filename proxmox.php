@@ -191,7 +191,9 @@ class Proxmox extends Module
         $params['vmid'] = '';
         $params['storage'] = $package->meta->storage;
         $params['ip'] = '';
-        $params['gateway'] = $package->meta->gateway;
+        $params['gateway'] = $row->meta->gateway;
+        $params['cidr'] = $row->meta->cidr;
+        $params['cloudinit'] = $package->meta->cloudinit;
 
         // Validate the service-specific fields
         $this->validateService($package, $vars);
@@ -319,6 +321,11 @@ class Proxmox extends Module
                 'encrypted' => 0
             ],
             [
+                'key' => 'proxmox_cidr',
+                'value' => $params['cidr'],
+                'encrypted' => 0
+            ],
+            [
                 'key' => 'proxmox_netspeed',
                 'value' => $params['netspeed'],
                 'encrypted' => 0
@@ -336,6 +343,11 @@ class Proxmox extends Module
             [
                 'key' => 'proxmox_unprivileged',
                 'value' => $params['unprivileged'],
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'cloudinit',
+                'value' => $params['cloudinit'],
                 'encrypted' => 0
             ],
             [
@@ -779,7 +791,7 @@ class Proxmox extends Module
     public function addModuleRow(array &$vars)
     {
         $meta_fields = ['server_name', 'user', 'password', 'host', 'port',
-            'vmid', 'ips'
+            'vmid', 'ips', 'gateway', 'cidr'
         ];
         $encrypted_fields = ['user', 'password'];
 
@@ -1153,16 +1165,25 @@ class Proxmox extends Module
             $fields->setField($swap);
         }
 
-        // Set Gateway field
-        $gateway = $fields->label(Language::_('Proxmox.package_fields.gateway', true), 'proxmox_gateway');
-        $gateway->attach(
-            $fields->fieldText(
-                'meta[gateway]',
-                $vars->meta['gateway'] ?? null,
-                ['id' => 'proxmox_gateway', 'placeholder' => 'e.g. 127.0.0.1']
-            )
-        );
-        $fields->setField($gateway);
+        if (($vars->meta['type'] ?? null) != 'lxc') {
+
+            // Enable/Disable CloudInit
+            $cloudinits = $this->setCloudinit();
+            $cloudinit = $fields->label(
+                Language::_('Proxmox.package_fields.cloudinit', true),
+                'cloudinit'
+            );
+            $cloudinit->attach(
+                $fields->fieldSelect(
+                    'meta[cloudinit]',
+                    $cloudinits,
+                    $vars->meta['cloudinit'] ?? null,
+                    ['id' => 'cloudinit']
+                )
+            );
+            $fields->setField($cloudinit);
+            unset($cloudinit);
+        }
 
         return $fields;
     }
@@ -2288,6 +2309,7 @@ class Proxmox extends Module
             'cpulimit' => $package->meta->cpulimit ?? 0,
             'cpuunits' => $package->meta->cpuunits ?? 0,
             'unprivileged' => $package->meta->unprivileged ?? null,
+            'cloudinit' => $package->meta->cloudinit ?? null,
             'netspeed' => $package->meta->netspeed
         ];
 
@@ -2587,6 +2609,14 @@ class Proxmox extends Module
         return [
             '0' => Language::_('Proxmox.unprivileged.disabled', true),
             '1' => Language::_('Proxmox.unprivileged.enabled', true)
+        ];
+    }
+
+    private function setCloudinit()
+    {
+        return [
+            '0' => Language::_('Proxmox.cloudinit.disabled', true),
+            '1' => Language::_('Proxmox.cloudinit.enabled', true)
         ];
     }
 
