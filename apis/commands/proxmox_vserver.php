@@ -93,7 +93,8 @@ class ProxmoxVserver
                 }
 
                 // https://pve.proxmox.com/pve-docs/api-viewer/#/nodes/{node}/lxc
-                $response = $this->api->submit('nodes/' . $vars['node'] . '/lxc', [
+
+                $payload = [
                     'unprivileged' => $vars['unprivileged'],
                     'vmid' => $vars['vmid'],
                     'ostemplate' => $vars['template'],
@@ -104,8 +105,28 @@ class ProxmoxVserver
                     'hostname' => $vars['hostname'],
                     'password' => $vars['password'],
                     'net0' => 'name=eth0,bridge=vmbr0,type=veth,firewall=1' . $net_fields_string,
-                    'onboot' => '0'
-                ], 'POST');
+                    'onboot' => '0',
+                ];
+
+                if ($vars['cpulimit'] !== '' && is_numeric($vars['cpulimit'])){
+                        $payload['cpulimit'] = (float)$vars['cpulimit'];
+                } else {
+                    $payload['cpulimit'] = '0';
+                }
+
+                if ($vars['cpuunits'] !== '' && is_numeric($vars['cpuunits'])){
+                    $payload['cpuunits'] = (int)$vars['cpuunits'];
+                } else {
+                    $payload['cpuunits'] = '100';
+                }
+
+                if ($vars['swap'] !== '' && is_numeric($vars['swap'])){
+                    $payload['swap'] = (int)$vars['swap'];
+                } else {
+                    $payload['swap'] = '0';
+                }
+
+                $response = $this->api->submit('nodes/' . $vars['node'] . '/lxc', $payload, 'POST');
                 break;
         }
 
