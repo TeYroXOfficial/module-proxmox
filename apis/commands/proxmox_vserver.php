@@ -105,7 +105,7 @@ class ProxmoxVserver
                     'hostname' => $vars['hostname'],
                     'password' => $vars['password'],
                     'net0' => 'name=eth0,bridge=vmbr0,type=veth,firewall=1' . $net_fields_string,
-                    'onboot' => '0',
+                    'onboot' => '1',
                 ];
 
                 $features = [];
