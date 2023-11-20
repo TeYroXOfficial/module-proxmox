@@ -354,6 +354,21 @@ class Proxmox extends Module
                 'key' => 'proxmox_swap',
                 'value' => $params['swap'],
                 'encrypted' => 0
+            ],
+            [
+                'key' => 'proxmox_fuse',
+                'value' => $params['fuse'],
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'proxmox_keyctl',
+                'value' => $params['keyctl'],
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'proxmox_nesting',
+                'value' => $params['nesting'],
+                'encrypted' => 0
             ]
         ];
     }
@@ -1119,6 +1134,54 @@ class Proxmox extends Module
             );
             $fields->setField($unprivileged);
             unset($unprivileged);
+
+            $fuses = $this->setFuse();
+            $fuse = $fields->label(
+                Language::_('Proxmox.package_fields.fuse', true),
+                'proxmox_fuse'
+            );
+            $fuse->attach(
+                $fields->fieldSelect(
+                    'meta[fuse]',
+                    $fuses,
+                    $vars->meta['fuse'] ?? null,
+                    ['id' => 'proxmox_fuse']
+                )
+            );
+            $fields->setField($fuse);
+            unset($fuse);
+
+            $keyctls = $this->setKeyctl();
+            $keyctl = $fields->label(
+                Language::_('Proxmox.package_fields.keyctl', true),
+                'proxmox_keyctl'
+            );
+            $keyctl->attach(
+                $fields->fieldSelect(
+                    'meta[keyctl]',
+                    $keyctls,
+                    $vars->meta['keyctl'] ?? null,
+                    ['id' => 'proxmox_keyctl']
+                )
+            );
+            $fields->setField($keyctl);
+            unset($keyctl);
+
+            $nestings = $this->setNesting();
+            $nesting = $fields->label(
+                Language::_('Proxmox.package_fields.nesting', true),
+                'proxmox_nesting'
+            );
+            $nesting->attach(
+                $fields->fieldSelect(
+                    'meta[nesting]',
+                    $nestings,
+                    $vars->meta['nesting'] ?? null,
+                    ['id' => 'proxmox_nesting']
+                )
+            );
+            $fields->setField($nesting);
+            unset($nesting);
         }
 
         // Set HDD field
@@ -1622,7 +1685,7 @@ class Proxmox extends Module
                         $module_row->meta->port
                     );
 
-                    $params = [
+                     $params = [
                         'unprivileged' => $package->meta->unprivileged ?? 'disabled',
                         'type' => $service_fields->proxmox_type ?? 'lxc',
                         'template' => $package->meta->template_storage . ':vztmpl/' . ($post['template'] ?? ''),
@@ -1639,7 +1702,6 @@ class Proxmox extends Module
                         'vmid' => $service_fields->proxmox_vserver_id,
                         'ip' => $service_fields->proxmox_ip
                     ];
-
                     // Load the vserver API
                     $api->loadCommand('proxmox_vserver');
                     $server_api = new ProxmoxVserver($api);
@@ -2421,6 +2483,9 @@ class Proxmox extends Module
             'cpulimit' => $package->meta->cpulimit ?? 0,
             'cpuunits' => $package->meta->cpuunits ?? 0,
             'unprivileged' => $package->meta->unprivileged ?? null,
+            'fuse' => $package->meta->fuse ?? null,
+            'keyctl' => $package->meta->keyctl ?? null,
+            'nesting' => $package->meta->nesting ?? null,
             'cloudinit' => $package->meta->cloudinit ?? null,
             'netspeed' => $package->meta->netspeed
         ];
@@ -2719,16 +2784,40 @@ class Proxmox extends Module
     private function setUnprivileged()
     {
         return [
-            '0' => Language::_('Proxmox.unprivileged.disabled', true),
-            '1' => Language::_('Proxmox.unprivileged.enabled', true)
+            '0' => Language::_('Proxmox.switch.disabled', true),
+            '1' => Language::_('Proxmox.switch.enabled', true)
         ];
     }
 
     private function setCloudinit()
     {
         return [
-            '0' => Language::_('Proxmox.cloudinit.disabled', true),
-            '1' => Language::_('Proxmox.cloudinit.enabled', true)
+            '0' => Language::_('Proxmox.switch.disabled', true),
+            '1' => Language::_('Proxmox.switch.enabled', true)
+        ];
+    }
+
+    private function setFuse()
+    {
+        return [
+            '0' => Language::_('Proxmox.switch.disabled', true),
+            '1' => Language::_('Proxmox.switch.enabled', true)
+        ];
+    }
+
+    private function setKeyctl()
+    {
+        return [
+            '0' => Language::_('Proxmox.switch.disabled', true),
+            '1' => Language::_('Proxmox.switch.enabled', true)
+        ];
+    }
+
+    private function setNesting()
+    {
+        return [
+            '0' => Language::_('Proxmox.switch.disabled', true),
+            '1' => Language::_('Proxmox.switch.enabled', true)
         ];
     }
 

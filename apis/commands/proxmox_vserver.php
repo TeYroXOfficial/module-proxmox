@@ -108,6 +108,17 @@ class ProxmoxVserver
                     'onboot' => '0',
                 ];
 
+                $features = [];
+                    if ($vars['fuse'] == '1') {
+                        $features[] = 'fuse=1';
+                    }
+                    if ($vars['keyctl'] == '1') {
+                        $features[] = 'keyctl=1';
+                    }
+                    if ($vars['nesting'] == '1') {
+                        $features[] = 'nesting=1';
+                    }
+
                 if ($vars['cpulimit'] !== '' && is_numeric($vars['cpulimit'])){
                         $payload['cpulimit'] = (float)$vars['cpulimit'];
                 } else {
@@ -126,6 +137,7 @@ class ProxmoxVserver
                     $payload['swap'] = '0';
                 }
 
+                $payload['features'] = implode(',', $features);
                 $response = $this->api->submit('nodes/' . $vars['node'] . '/lxc', $payload, 'POST');
                 break;
         }

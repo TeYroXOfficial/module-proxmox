@@ -103,13 +103,9 @@ $lang['Proxmox.types.lxc'] = 'LXC';
 $lang['Proxmox.types.kvm'] = 'KVM';
 
 
-// Set Unprivileged
-$lang['Proxmox.unprivileged.disabled'] = 'Disabled';
-$lang['Proxmox.unprivileged.enabled'] = 'Enabled';
-
-// Set CloudInit
-$lang['Proxmox.cloudinit.disabled'] = 'Disabled';
-$lang['Proxmox.cloudinit.enabled'] = 'Enabled';
+// Button switch Disabled/Enabled
+$lang['Proxmox.switch.disabled'] = 'Disabled';
+$lang['Proxmox.switch.enabled'] = 'Enabled';
 
 
 // Add module row
@@ -138,6 +134,9 @@ $lang['Proxmox.package_fields.cpuunits'] = 'CPU Units';
 $lang['Proxmox.package_fields.swap'] = 'SWAP (MB)';
 $lang['Proxmox.package_fields.unprivileged'] = 'Unprivileged';
 $lang['Proxmox.package_fields.cloudinit'] = 'Cloud-init';
+$lang['Proxmox.package_fields.keyctl'] = 'Keyctl';
+$lang['Proxmox.package_fields.nesting'] = 'Nesting';
+$lang['Proxmox.package_fields.fuse'] = 'Fuse';
 
 $lang['Proxmox.package_fields.assigned_nodes'] = 'Assigned Nodes';
 $lang['Proxmox.package_fields.available_nodes'] = 'Available Nodes';
