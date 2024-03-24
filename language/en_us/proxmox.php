@@ -50,7 +50,7 @@ $lang['Proxmox.!error.module_row.missing'] = 'An internal error occurred. The mo
 // Common
 $lang['Proxmox.please_select'] = '-- Please Select --';
 $lang['Proxmox.!bytes.value'] = '%1$s%2$s'; // %1$s is a number value, %2$s is the unit of that value (i.e., one of B, KB, MB, GB)
-$lang['Proxmox.!uptime.value'] = '%3$s days, %2$s hours, %1$s minutes'; // %1$s is the number of uptime days, %2$s is the number of uptime hours, %3$s is the number of uptime minutes
+$lang['Proxmox.!uptime.value'] = '%1$s days, %2$s hours, %3$s minutes'; // %1$s is the number of uptime days, %2$s is the number of uptime hours, %3$s is the number of uptime minutes
 $lang['Proxmox.!percent.used'] = '%1$s%'; // %1$s is a percentage value
 
 // Basics
@@ -86,7 +86,7 @@ $lang['Proxmox.order_options.first'] = 'First non-full server';
 
 // Module row meta data
 $lang['Proxmox.row_meta.server_name'] = 'Server Label';
-$lang['Proxmox.row_meta.user'] = 'User';
+$lang['Proxmox.row_meta.user'] = 'User (with @pam or @pve after the username)';
 $lang['Proxmox.row_meta.password'] = 'Password';
 $lang['Proxmox.row_meta.host'] = 'Hostname';
 $lang['Proxmox.row_meta.port'] = 'SSL Port Number';
@@ -250,4 +250,6 @@ $lang['Proxmox.tab_client_lxcreinstall.field_reinstall_submit'] = 'Reinstall';
 $lang['Proxmox.tab_client_isomanager.heading_isomanager'] = 'ISO Manager';
 $lang['Proxmox.tab_client_isomanager.field_iso'] = 'Image';
 $lang['Proxmox.tab_client_isomanager.field_mount_submit'] = 'Mount';
+
 $lang['Proxmox.tab_client_isomanager.field_unmount_submit'] = 'Unmount ISO';
+
