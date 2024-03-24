@@ -191,7 +191,9 @@ class Proxmox extends Module
         $params['vmid'] = '';
         $params['storage'] = $package->meta->storage;
         $params['ip'] = '';
-        $params['gateway'] = $package->meta->gateway;
+        $params['gateway'] = $row->meta->gateway;
+        $params['cidr'] = $row->meta->cidr;
+        $params['cloudinit'] = $package->meta->cloudinit;
 
         // Validate the service-specific fields
         $this->validateService($package, $vars);
@@ -319,6 +321,11 @@ class Proxmox extends Module
                 'encrypted' => 0
             ],
             [
+                'key' => 'proxmox_cidr',
+                'value' => $params['cidr'],
+                'encrypted' => 0
+            ],
+            [
                 'key' => 'proxmox_netspeed',
                 'value' => $params['netspeed'],
                 'encrypted' => 0
@@ -336,6 +343,11 @@ class Proxmox extends Module
             [
                 'key' => 'proxmox_unprivileged',
                 'value' => $params['unprivileged'],
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'cloudinit',
+                'value' => $params['cloudinit'],
                 'encrypted' => 0
             ],
             [
@@ -764,7 +776,12 @@ class Proxmox extends Module
             // Mask password by replacing with ***
             $vars->password = '***';
         }
-        
+
+        // Serialize password variable with ***
+        if (isset($vars->password)) {
+            $vars->password = '***';
+        }
+
         $this->view->set('vars', (object)$vars);
         return $this->view->fetch();
     }
@@ -782,7 +799,7 @@ class Proxmox extends Module
     public function addModuleRow(array &$vars)
     {
         $meta_fields = ['server_name', 'user', 'password', 'host', 'port',
-            'vmid', 'ips'
+            'vmid', 'ips', 'gateway', 'cidr'
         ];
         $encrypted_fields = ['user', 'password'];
 
@@ -1161,16 +1178,25 @@ class Proxmox extends Module
             $fields->setField($swap);
         }
 
-        // Set Gateway field
-        $gateway = $fields->label(Language::_('Proxmox.package_fields.gateway', true), 'proxmox_gateway');
-        $gateway->attach(
-            $fields->fieldText(
-                'meta[gateway]',
-                $vars->meta['gateway'] ?? null,
-                ['id' => 'proxmox_gateway', 'placeholder' => 'e.g. 127.0.0.1']
-            )
-        );
-        $fields->setField($gateway);
+        if (($vars->meta['type'] ?? null) != 'lxc') {
+
+            // Enable/Disable CloudInit
+            $cloudinits = $this->setCloudinit();
+            $cloudinit = $fields->label(
+                Language::_('Proxmox.package_fields.cloudinit', true),
+                'cloudinit'
+            );
+            $cloudinit->attach(
+                $fields->fieldSelect(
+                    'meta[cloudinit]',
+                    $cloudinits,
+                    $vars->meta['cloudinit'] ?? null,
+                    ['id' => 'cloudinit']
+                )
+            );
+            $fields->setField($cloudinit);
+            unset($cloudinit);
+        }
 
         return $fields;
     }
@@ -1927,6 +1953,109 @@ class Proxmox extends Module
         return $this->view;
     }
 
+    public function tabClientIsoManager($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        $view = $this->isoManager($package, $service, $get, $post, true);
+        return $view->fetch();
+    }
+
+    private function isoManager($package, $service, $get = null, $post = null, $client = false){
+
+        $template = ($client ? 'tab_client_isomanager' : '');
+        $this->view = new View($template, 'default');
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        // Get the service fields
+        $service_fields = $this->serviceFieldsToObject($service->fields);
+        $module_row = $this->getModuleRow($package->module_row);
+
+        // Perform the actions
+        $this->actionsTab($package, $service, true, $get, $post);
+
+        // Perform the actions
+        $this->actionsTab($package, $service, true, $get, $post);
+
+        // Set default vars
+        $vars = ['hostname' => $service_fields->proxmox_hostname];
+        $this->view->set(
+            'isos',
+            $this->getServerISOs($service_fields->proxmox_node, $package->meta->storage, $module_row)
+        );
+
+        $this->view->set('client_id', $service->client_id);
+        $this->view->set('service_id', $service->id);
+
+        $this->view->base_uri = $this->base_uri;
+        $this->view->set(
+            'server',
+            $this->getServerState(
+                $service_fields->proxmox_vserver_id,
+                $service_fields->proxmox_type,
+                $service_fields->proxmox_node,
+                $module_row
+            )
+        );
+
+        $this->view->set('type', $service_fields->proxmox_type);
+        $this->view->set('vars', (object)$vars);
+        $this->view->set('service_fields', $this->serviceFieldsToObject($service->fields));
+
+        $this->view->set('view', $this->view->view);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'proxmox' . DS);
+        return $this->view;
+    }
+
+    public function tabClientLXCReinstall($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        $view = $this->lxcReinstall($package, $service, $get, $post, true);
+        return $view->fetch();
+    }
+
+    private function lxcReinstall($package, $service, $get = null, $post = null, $client = false)
+    {
+        $template = ($client ? 'tab_client_lxcreinstall' : '');
+        $this->view = new View($template, 'default');
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        // Get the service fields
+        $service_fields = $this->serviceFieldsToObject($service->fields);
+        $module_row = $this->getModuleRow($package->module_row);
+
+        // Perform the actions
+        $this->actionsTab($package, $service, true, $get, $post);
+
+        // Set default vars
+        $vars = ['hostname' => $service_fields->proxmox_hostname];
+
+        $this->view->set('client_id', $service->client_id);
+        $this->view->set('service_id', $service->id);
+
+        $this->view->base_uri = $this->base_uri;
+        $this->view->set(
+            'server',
+            $this->getServerState(
+                $service_fields->proxmox_vserver_id,
+                $service_fields->proxmox_type,
+                $service_fields->proxmox_node,
+                $module_row
+            )
+        );
+        $this->view->set(
+            'templates',
+            $this->getServerTemplates($service_fields->proxmox_node, $package->meta->template_storage, $module_row)
+        );
+
+        $this->view->set('type', $service_fields->proxmox_type);
+        $this->view->set('vars', (object)$vars);
+        $this->view->set('service_fields', $this->serviceFieldsToObject($service->fields));
+
+        $this->view->set('view', $this->view->view);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'proxmox' . DS);
+        return $this->view;
+    }
+
     /**
      * Client ISO Manager tab
      *
@@ -2441,6 +2570,7 @@ class Proxmox extends Module
             'cpulimit' => $package->meta->cpulimit ?? 0,
             'cpuunits' => $package->meta->cpuunits ?? 0,
             'unprivileged' => $package->meta->unprivileged ?? null,
+            'cloudinit' => $package->meta->cloudinit ?? null,
             'netspeed' => $package->meta->netspeed
         ];
 
@@ -2740,6 +2870,14 @@ class Proxmox extends Module
         return [
             '0' => Language::_('Proxmox.unprivileged.disabled', true),
             '1' => Language::_('Proxmox.unprivileged.enabled', true)
+        ];
+    }
+
+    private function setCloudinit()
+    {
+        return [
+            '0' => Language::_('Proxmox.cloudinit.disabled', true),
+            '1' => Language::_('Proxmox.cloudinit.enabled', true)
         ];
     }
 
